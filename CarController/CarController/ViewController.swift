@@ -17,6 +17,10 @@ class ViewController: UIViewController {
     @IBOutlet weak var counterLabel: UILabel!
     @IBOutlet weak var speedLabel: UILabel!
     @IBOutlet weak var speedSlider: UISlider!
+    @IBOutlet weak var leftAdjustmentLabel: UILabel!
+    @IBOutlet weak var leftAdjuster: UIStepper!
+    @IBOutlet weak var rightAdjuster: UIStepper!
+    @IBOutlet weak var rightAdjustmentLabel: UILabel!
     
     var centralManager: CBCentralManager!
     var carPeripheral: CBPeripheral!
@@ -25,6 +29,8 @@ class ViewController: UIViewController {
     var leftSpeed: Int = 0
     var rightSpeed: Int = 0
     var speedChange: Int = 100
+    var leftAdjustment: Int = 0
+    var rightAdjustment: Int = 0
     
     var sendSpeedTask: DispatchWorkItem!
 
@@ -37,6 +43,14 @@ class ViewController: UIViewController {
         
         speedLabel.text = "\(speedChange)"
         speedSlider.value = Float(speedChange)
+        
+        leftAdjustment = UserDefaults.standard.integer(forKey: "leftAdjustment")
+        leftAdjustmentLabel.text = "\(leftAdjustment)"
+        leftAdjuster.value = Double(leftAdjustment)
+        
+        rightAdjustment = UserDefaults.standard.integer(forKey: "rightAdjustment")
+        rightAdjustmentLabel.text = "\(rightAdjustment)"
+        rightAdjuster.value = Double(rightAdjustment)
 
         centralManager = CBCentralManager(delegate: self, queue: nil)
     }
@@ -47,8 +61,8 @@ class ViewController: UIViewController {
     }
     
     func sendSpeed() {
-        var leftSpeedString = String(leftSpeed * speedChange)
-        var rightSpeedString = String(rightSpeed * speedChange)
+        var leftSpeedString = String(leftSpeed * (speedChange + leftAdjustment))
+        var rightSpeedString = String(rightSpeed * (speedChange + rightAdjustment))
         
         leftSpeedString = leftSpeedString.padding(toLength: 4, withPad: " ", startingAt: 0)
         rightSpeedString = rightSpeedString.padding(toLength: 4, withPad: " ", startingAt: 0)
@@ -87,6 +101,23 @@ class ViewController: UIViewController {
         defaults.set(speedChange, forKey: "speedChange")
             
         speedLabel.text = "\(speedChange)"
+    }
+    
+    @IBAction func onLeftAdjustmentChange(_ sender: UIStepper) {
+        leftAdjustment = Int(sender.value)
+        
+        let defaults = UserDefaults.standard
+        defaults.set(leftAdjustment, forKey: "leftAdjustment")
+            
+        leftAdjustmentLabel.text = "\(leftAdjustment)"
+    }
+    @IBAction func onRightAdjustmentChange(_ sender: UIStepper) {
+        rightAdjustment = Int(sender.value)
+        
+        let defaults = UserDefaults.standard
+        defaults.set(rightAdjustment, forKey: "rightAdjustment")
+            
+        rightAdjustmentLabel.text = "\(rightAdjustment)"
     }
     
     @IBAction func onLeftForwardPress(_ sender: Any) {

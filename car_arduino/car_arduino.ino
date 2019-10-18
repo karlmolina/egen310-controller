@@ -24,10 +24,12 @@ class MyServerCallbacks: public BLEServerCallbacks {
     void onConnect(BLEServer* pServer) {
       deviceConnected = true;
       BLEDevice::startAdvertising();
+      digitalWrite(13, HIGH);
     };
 
     void onDisconnect(BLEServer* pServer) {
       deviceConnected = false;
+      digitalWrite(13, LOW);
     }
 };
 
@@ -65,7 +67,6 @@ class MyCharacteristicCallbacks: public BLECharacteristicCallbacks {
           leftMotor->run(RELEASE);
         }
       }
-      digitalWrite(13, HIGH);
     }
 };
 
@@ -134,6 +135,7 @@ void loop() {
         pServer->startAdvertising(); // restart advertising
         Serial.println("start advertising");
         oldDeviceConnected = deviceConnected;
+        value = 0;
     }
     // connecting
     if (deviceConnected && !oldDeviceConnected) {
@@ -141,6 +143,4 @@ void loop() {
         oldDeviceConnected = deviceConnected;
         Serial.println("Connecting");
     }
-    
-    digitalWrite(13, LOW);
 }

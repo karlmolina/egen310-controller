@@ -14,7 +14,9 @@ let characteristicCBUUID = CBUUID(string: "4b55ae61-a529-4b2c-85f9-82c7401db550"
 
 class ViewController: UIViewController {
     
+    @IBOutlet weak var counterLabel: UILabel!
     @IBOutlet weak var speedLabel: UILabel!
+    @IBOutlet weak var speedSlider: UISlider!
     
     var centralManager: CBCentralManager!
     var carPeripheral: CBPeripheral!
@@ -23,80 +25,119 @@ class ViewController: UIViewController {
     var leftSpeed: Int = 0
     var rightSpeed: Int = 0
     var speedChange: Int = 100
+    
+    var sendSpeedTask: DispatchWorkItem!
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        let savedSpeed = UserDefaults.standard.integer(forKey: "speedChange")
+        speedChange = savedSpeed
+        
+        
+        speedLabel.text = "\(speedChange)"
+        speedSlider.value = Float(speedChange)
 
         centralManager = CBCentralManager(delegate: self, queue: nil)
     }
     
-    func onNotificationReceived(_ value: Int) {
-        speedLabel.text = String(value)
+    func onConnectionChanged(_ value: Bool) {
+        counterLabel.text = "\(value)"
         print("Value received: \(value)")
     }
     
     func sendSpeed() {
-        var leftSpeedString = String(leftSpeed)
-        var rightSpeedString = String(rightSpeed)
+        var leftSpeedString = String(leftSpeed * speedChange)
+        var rightSpeedString = String(rightSpeed * speedChange)
         
         leftSpeedString = leftSpeedString.padding(toLength: 4, withPad: " ", startingAt: 0)
         rightSpeedString = rightSpeedString.padding(toLength: 4, withPad: " ", startingAt: 0)
         
-        print(leftSpeedString)
-        print(rightSpeedString)
+        print("leftSpeedString \(leftSpeedString)")
+        print("rightSpeedString) \(rightSpeedString)")
+        print("data sent: \(leftSpeedString)\(rightSpeedString)")
         
         writeData(data: "\(leftSpeedString)\(rightSpeedString)".data(using: .utf8)!)
     }
     
+    func resetBluetoothConnection() {
+        if (carPeripheral != nil) {
+            centralManager.cancelPeripheralConnection(carPeripheral)
+            centralManager.connect(carPeripheral)
+        }
+    }
+    
+    @IBAction func onReconnectPress(_ sender: Any) {
+        resetBluetoothConnection()
+    }
+    
+    @IBAction func onSpeedChange(_ sender: UISlider) {
+        speedChange = Int(sender.value)
+        
+        // Check if send speed async call exists and cancel if so
+        if sendSpeedTask != nil {
+            sendSpeedTask.cancel()
+        }
+        // Set new send speed task
+        sendSpeedTask = DispatchWorkItem { self.sendSpeed() }
+        // Dispatch async send speed call after delay
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.3, execute: sendSpeedTask)
+
+        let defaults = UserDefaults.standard
+        defaults.set(speedChange, forKey: "speedChange")
+            
+        speedLabel.text = "\(speedChange)"
+    }
+    
     @IBAction func onLeftForwardPress(_ sender: Any) {
-        leftSpeed += speedChange
+        leftSpeed = 1
         sendSpeed()
     }
     @IBAction func onLeftForwardTouchUpInside(_ sender: Any) {
-        leftSpeed -= speedChange
+        leftSpeed = 0
         sendSpeed()
     }
     @IBAction func onLeftForwardTouchUpOutside(_ sender: Any) {
-        leftSpeed -= speedChange
+        leftSpeed = 0
         sendSpeed()
     }
     
     @IBAction func onLeftBackPress(_ sender: Any) {
-        leftSpeed -= speedChange
+        leftSpeed = -1
         sendSpeed()
     }
     @IBAction func onLeftBackTouchUpInside(_ sender: Any) {
-        leftSpeed += speedChange
+        leftSpeed = 0
         sendSpeed()
     }
     @IBAction func onLeftBackTouchUpOutside(_ sender: Any) {
-        leftSpeed += speedChange
+        leftSpeed = 0
         sendSpeed()
     }
     
     @IBAction func onRightForwardPress(_ sender: Any) {
-        rightSpeed += speedChange
+        rightSpeed = 1
         sendSpeed()
     }
     @IBAction func onRightForwardTouchUpInside(_ sender: Any) {
-        rightSpeed -= speedChange
+        rightSpeed = 0
         sendSpeed()
     }
     @IBAction func onRightForwardTouchUpOutside(_ sender: Any) {
-        rightSpeed -= speedChange
+        rightSpeed = 0
         sendSpeed()
     }
     
     @IBAction func onRightBackPress(_ sender: Any) {
-        rightSpeed -= speedChange
+        rightSpeed = -1
         sendSpeed()
     }
     @IBAction func onRightBackTouchUpInside(_ sender: Any) {
-        rightSpeed += speedChange
+        rightSpeed = 0
         sendSpeed()
     }
     @IBAction func onRightBackTouchUpOutside(_ sender: Any) {
-        rightSpeed += speedChange
+        rightSpeed = 0
         sendSpeed()
     }
 }
@@ -134,6 +175,11 @@ extension ViewController: CBCentralManagerDelegate {
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
         print("Connected!")
         carPeripheral.discoverServices([serviceCBUUID])
+        onConnectionChanged(true)
+    }
+    
+    func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
+        onConnectionChanged(false)
     }
 }
 
@@ -154,25 +200,30 @@ extension ViewController: CBPeripheralDelegate {
 
             if characteristic.properties.contains(.read) {
                 print("\(characteristic.uuid): properties contains .read")
-                peripheral.readValue(for: characteristic)
+//                peripheral.readValue(for: characteristic)
             }
             if characteristic.properties.contains(.notify) {
                 print("\(characteristic.uuid): properties contains .notify")
-                peripheral.setNotifyValue(true, for: characteristic)
+//                peripheral.setNotifyValue(true, for: characteristic)
+            }
+            if characteristic.properties.contains(.write) {
+                print("\(characteristic.uuid): properties contains .write")
+//                peripheral.setNotifyValue(true, for: characteristic)
+                speedCharacteristic = characteristic
             }
         }
     }
 
-    func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
-        switch characteristic.uuid {
-        case characteristicCBUUID:
-            let characteristicValue = getCharacteristicValue(from: characteristic)
-            onNotificationReceived(characteristicValue)
-            speedCharacteristic = characteristic
-        default:
-            print("Unhandled Characteristic UUID: \(characteristic.uuid)")
-        }
-    }
+//    func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
+//        switch characteristic.uuid {
+//        case characteristicCBUUID:
+//            let characteristicValue = getCharacteristicValue(from: characteristic)
+//            onConnectionChanged(characteristicValue)
+//            speedCharacteristic = characteristic
+//        default:
+//            print("Unhandled Characteristic UUID: \(characteristic.uuid)")
+//        }
+//    }
   
     func peripheral(_ peripheral: CBPeripheral, didWriteValueFor descriptor: CBDescriptor, error: Error?) {
         if error != nil {

@@ -89,13 +89,12 @@ class ViewController: UIViewController {
         speedChange = Int(sender.value)
         
         // Check if send speed async call exists and cancel if so
-        if sendSpeedTask != nil {
-            sendSpeedTask.cancel()
+        if sendSpeedTask == nil {
+            // Set new send speed task
+            sendSpeedTask = DispatchWorkItem { self.sendSpeed() }
+            // Dispatch async send speed call after delay
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.2, execute: sendSpeedTask)
         }
-        // Set new send speed task
-        sendSpeedTask = DispatchWorkItem { self.sendSpeed() }
-        // Dispatch async send speed call after delay
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.3, execute: sendSpeedTask)
 
         let defaults = UserDefaults.standard
         defaults.set(speedChange, forKey: "speedChange")

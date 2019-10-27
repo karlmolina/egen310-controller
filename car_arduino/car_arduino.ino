@@ -17,8 +17,10 @@ uint32_t value = 0;
 Adafruit_MotorShield AFMS = Adafruit_MotorShield();
 
 // The right and left motors
-Adafruit_DCMotor *rightMotor = AFMS.getMotor(1);
-Adafruit_DCMotor *leftMotor = AFMS.getMotor(4);
+int rightMotorPin = 3;
+int leftMotorPin = 4;
+Adafruit_DCMotor *rightMotor = AFMS.getMotor(rightMotorPin);
+Adafruit_DCMotor *leftMotor = AFMS.getMotor(leftMotorPin);
 
 class MyServerCallbacks: public BLEServerCallbacks {
     void onConnect(BLEServer* pServer) {
@@ -43,8 +45,14 @@ class MyCharacteristicCallbacks: public BLECharacteristicCallbacks {
 
         std::string leftSub = value.substr(0, 4);
         std::string rightSub = value.substr(4, 8);
+        std::string leftPinSub = value.substr(8, 9);
+        std::string rightPinSub = value.substr(9, 10);
         int leftSpeed = std::atoi(leftSub.c_str());
         int rightSpeed = std::atoi(rightSub.c_str());
+        int leftPin = std::atoi(leftPinSub.c_str());
+        int rightPin = std::atoi(rightPinSub.c_str());
+
+        changeMotorPins(leftPin, rightPin);
 
         // Turn on the right motor according to the data
         if (rightSpeed < 0) {
@@ -68,6 +76,19 @@ class MyCharacteristicCallbacks: public BLECharacteristicCallbacks {
         }
       }
     }
+
+    void changeMotorPins(int left, int right) {
+    if (leftMotorPin != left) {
+      leftMotor->setSpeed(0);
+      leftMotorPin = left;
+      leftMotor = AFMS.getMotor(leftMotorPin);
+    }
+    if (rightMotorPin != right) {
+      rightMotor->setSpeed(0);
+      rightMotorPin = right;
+      rightMotor = AFMS.getMotor(rightMotorPin);
+    }
+  }
 };
 
 void setup() {
@@ -123,12 +144,12 @@ void setup() {
 
 void loop() {
     // notify changed value
-    if (deviceConnected) {
-        pCharacteristic->setValue((uint8_t*)&value, 4);
-        pCharacteristic->notify();
-        value++;
-        delay(1000); // bluetooth stack will go into congestion, if too many packets are sent, in 6 hours test i was able to go as low as 3ms
-    }
+//    if (deviceConnected) {
+//        pCharacteristic->setValue((uint8_t*)&value, 4);
+//        pCharacteristic->notify();
+//        value++;
+//        delay(1000); // bluetooth stack will go into congestion, if too many packets are sent, in 6 hours test i was able to go as low as 3ms
+//    }
     // disconnecting
     if (!deviceConnected && oldDeviceConnected) {
         delay(500); // give the bluetooth stack the chance to get things ready

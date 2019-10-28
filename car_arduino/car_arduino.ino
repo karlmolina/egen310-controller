@@ -17,7 +17,7 @@ uint32_t value = 0;
 Adafruit_MotorShield AFMS = Adafruit_MotorShield();
 
 // The right and left motors
-Adafruit_DCMotor *rightMotor = AFMS.getMotor(1);
+Adafruit_DCMotor *rightMotor = AFMS.getMotor(3);
 Adafruit_DCMotor *leftMotor = AFMS.getMotor(4);
 
 class MyServerCallbacks: public BLEServerCallbacks {

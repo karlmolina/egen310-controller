@@ -166,13 +166,6 @@ class MyCharacteristicCallbacks: public BLECharacteristicCallbacks {
   }
   
   void loop() {
-      // notify changed value
-//      if (deviceConnected) {
-//          pCharacteristic->setValue((uint8_t*)&value, 4);
-//          pCharacteristic->notify();
-//          value++;
-//          delay(1000); // bluetooth stack will go into congestion, if too many packets are sent, in 6 hours test i was able to go as low as 3ms
-//      }
       // disconnecting
       if (!deviceConnected && oldDeviceConnected) {
           delay(500); // give the bluetooth stack the chance to get things ready

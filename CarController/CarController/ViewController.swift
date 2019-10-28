@@ -31,48 +31,90 @@ class ViewController: UIViewController {
     var speedChange: Int = 100
     var leftAdjustment: Int = 0
     var rightAdjustment: Int = 0
+    var leftMotorPin = 1
+    var rightMotorPin = 2
+    var leftMotorDirection = 1
+    var rightMotorDirection = 1
     
     var sendSpeedTask: DispatchWorkItem!
     var speedSent = false
+    
+    let defaults = UserDefaults.standard
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let savedSpeed = UserDefaults.standard.integer(forKey: "speedChange")
-        speedChange = savedSpeed
-        
+        initializeSavedValues()
         
         speedLabel.text = "\(speedChange)"
         speedSlider.value = Float(speedChange)
         
-        leftAdjustment = UserDefaults.standard.integer(forKey: "leftAdjustment")
-        leftAdjustmentLabel.text = "\(leftAdjustment)"
-        leftAdjuster.value = Double(leftAdjustment)
-        
-        rightAdjustment = UserDefaults.standard.integer(forKey: "rightAdjustment")
         rightAdjustmentLabel.text = "\(rightAdjustment)"
         rightAdjuster.value = Double(rightAdjustment)
+        
+        leftAdjustmentLabel.text = "\(leftAdjustment)"
+        leftAdjuster.value = Double(leftAdjustment)
 
         centralManager = CBCentralManager(delegate: self, queue: nil)
     }
     
+    func initializeSavedValues() {
+        let savedSpeed = defaults.integer(forKey: "speedChange")
+        speedChange = savedSpeed
+        
+        leftAdjustment = defaults.integer(forKey: "leftAdjustment")
+        
+        rightAdjustment = defaults.integer(forKey: "rightAdjustment")
+        
+        let savedLeftMotorPin = defaults.integer(forKey: "leftMotorPin")
+        if savedLeftMotorPin != 0 {
+            leftMotorPin = savedLeftMotorPin
+        }
+        
+        let savedRightMotorPin = defaults.integer(forKey: "rightMotorPin")
+        if savedRightMotorPin != 0 {
+            rightMotorPin = savedRightMotorPin
+        }
+        
+        let savedLeftMotorDirection = defaults.integer(forKey: "leftMotorDirection")
+        if savedLeftMotorDirection != 0 {
+            leftMotorDirection = savedLeftMotorDirection
+        }
+        
+        let savedRightMotorDirection = defaults.integer(forKey: "rightMotorDirection")
+        if savedRightMotorDirection != 0 {
+            rightMotorDirection = savedRightMotorDirection
+        }
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let navigationViewController = segue.destination as? UINavigationController
+        let settingsViewController = navigationViewController?.viewControllers.first as! SettingsViewController
+        
+        settingsViewController.settingsDelegate = self
+        settingsViewController.leftMotorPin = leftMotorPin
+        settingsViewController.rightMotorPin = rightMotorPin
+        settingsViewController.leftDirectionIndex = leftMotorDirection == 1 ? 0 : 1
+        settingsViewController.rightDirectionIndex = rightMotorDirection == 1 ? 0 : 1
+    }
+    
     func onConnectionChanged(_ value: Bool) {
         counterLabel.text = "\(value)"
-        print("Value received: \(value)")
+        print("Connection changed to: \(value)")
     }
     
     func sendSpeed() {
-        var leftSpeedString = String(leftSpeed * (speedChange + leftAdjustment))
-        var rightSpeedString = String(rightSpeed * (speedChange + rightAdjustment))
+        var leftSpeedString = String(leftSpeed * (speedChange + leftAdjustment) * leftMotorDirection)
+        var rightSpeedString = String(rightSpeed * (speedChange + rightAdjustment) * rightMotorDirection)
         
         leftSpeedString = leftSpeedString.padding(toLength: 4, withPad: " ", startingAt: 0)
         rightSpeedString = rightSpeedString.padding(toLength: 4, withPad: " ", startingAt: 0)
         
         print("leftSpeedString \(leftSpeedString)")
         print("rightSpeedString) \(rightSpeedString)")
-        print("data sent: \(leftSpeedString)\(rightSpeedString)")
+        print("data sent: \(leftSpeedString)\(rightSpeedString)\(leftMotorPin)\(rightMotorPin)")
         
-        writeData(data: "\(leftSpeedString)\(rightSpeedString)".data(using: .utf8)!)
+        writeData(data: "\(leftSpeedString)\(rightSpeedString)\(leftMotorPin)\(rightMotorPin)".data(using: .utf8)!)
     }
     
     func resetBluetoothConnection() {
@@ -282,5 +324,35 @@ extension ViewController: CBPeripheralDelegate {
         print("Characteristic value: \(byteArray)")
     
         return Int(byteArray[0])
+    }
+}
+
+extension ViewController: SettingsDelegate {
+    func onLeftMotorPinChange(pin: Int) {
+        print("leftMotorPin changed to \(pin)")
+        leftMotorPin = pin
+        
+        defaults.set(leftMotorPin, forKey: "leftMotorPin")
+    }
+    
+    func onRightMotorPinChange(pin: Int) {
+        print("rightMotorPin changed to \(pin)")
+        rightMotorPin = pin
+        
+        defaults.set(rightMotorPin, forKey: "rightMotorPin")
+    }
+    
+    func onLeftDirectionChange(direction: Int) {
+        print("leftDirection changed to \(direction)")
+        leftMotorDirection = direction
+        
+        defaults.set(leftMotorDirection, forKey: "leftMotorDirection")
+    }
+    
+    func onRightDirectionChange(direction: Int) {
+        print("rightDirection changed to \(direction)")
+        rightMotorDirection = direction
+        
+        defaults.set(rightMotorDirection, forKey: "rightMotorDirection")
     }
 }

@@ -120,7 +120,7 @@
                                         </constraints>
                                         <state key="normal" backgroundImage="gear" catalog="system"/>
                                         <connections>
-                                            <segue destination="96w-vZ-OPk" kind="presentation" id="hnl-ro-d6l"/>
+                                            <segue destination="emd-5D-ZGv" kind="presentation" id="hnl-ro-d6l"/>
                                         </connections>
                                     </button>
                                     <stepper opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" minimumValue="-100" maximumValue="100" translatesAutoresizingMaskIntoConstraints="NO" id="Xxu-2Q-Yg3">
@@ -294,7 +294,7 @@
         <!--Settings-->
         <scene sceneID="YHD-ib-J9W">
             <objects>
-                <tableViewController title="Settings" clearsSelectionOnViewWillAppear="NO" id="96w-vZ-OPk" sceneMemberID="viewController">
+                <tableViewController title="Settings" clearsSelectionOnViewWillAppear="NO" id="96w-vZ-OPk" customClass="SettingsViewController" customModule="CarController" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="static" style="grouped" separatorStyle="default" allowsSelection="NO" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" sectionFooterHeight="18" id="CNH-Wb-irE">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="758"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -317,6 +317,9 @@
                                                 </label>
                                                 <stepper opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="1" minimumValue="1" maximumValue="4" translatesAutoresizingMaskIntoConstraints="NO" id="xdT-Qn-SHi">
                                                     <rect key="frame" x="266" y="6" width="94" height="32"/>
+                                                    <connections>
+                                                        <action selector="onLeftMotorPinValueChanged:" destination="96w-vZ-OPk" eventType="valueChanged" id="Et8-Bl-yha"/>
+                                                    </connections>
                                                 </stepper>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="#" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UZJ-B7-LbQ">
                                                     <rect key="frame" x="247" y="11.666666666666664" width="11" height="21"/>
@@ -350,6 +353,9 @@
                                                 </label>
                                                 <stepper opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="1" minimumValue="1" maximumValue="4" translatesAutoresizingMaskIntoConstraints="NO" id="paF-zG-xeY">
                                                     <rect key="frame" x="266" y="6" width="94" height="32"/>
+                                                    <connections>
+                                                        <action selector="onRightMotorPinValueChanged:" destination="96w-vZ-OPk" eventType="valueChanged" id="vJv-0p-lqb"/>
+                                                    </connections>
                                                 </stepper>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="#" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qnR-Wl-mnd">
                                                     <rect key="frame" x="247" y="11.666666666666664" width="11" height="21"/>
@@ -386,11 +392,14 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="k5V-Bf-MkU">
-                                                    <rect key="frame" x="210" y="7" width="149" height="32"/>
+                                                    <rect key="frame" x="210" y="6.6666666666666679" width="149" height="32"/>
                                                     <segments>
                                                         <segment title="Positive"/>
                                                         <segment title="Negative"/>
                                                     </segments>
+                                                    <connections>
+                                                        <action selector="onLeftDirectionChanged:" destination="96w-vZ-OPk" eventType="valueChanged" id="Pm8-gc-iof"/>
+                                                    </connections>
                                                 </segmentedControl>
                                             </subviews>
                                             <constraints>
@@ -420,6 +429,9 @@
                                                         <segment title="Positive"/>
                                                         <segment title="Negative"/>
                                                     </segments>
+                                                    <connections>
+                                                        <action selector="onRightDirectionChanged:" destination="96w-vZ-OPk" eventType="valueChanged" id="nIb-Pr-6iU"/>
+                                                    </connections>
                                                 </segmentedControl>
                                             </subviews>
                                             <constraints>
@@ -438,10 +450,43 @@
                             <outlet property="delegate" destination="96w-vZ-OPk" id="fJ4-M9-dBx"/>
                         </connections>
                     </tableView>
+                    <navigationItem key="navigationItem" title="Settings" id="yCb-DP-f5P">
+                        <barButtonItem key="rightBarButtonItem" systemItem="done" id="DFW-eJ-jm4">
+                            <connections>
+                                <action selector="onDoneButtonPress:" destination="96w-vZ-OPk" id="HvE-Km-GfL"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="leftDirectionControl" destination="k5V-Bf-MkU" id="YgF-Ux-BqW"/>
+                        <outlet property="leftMotorPinLabel" destination="UZJ-B7-LbQ" id="iad-58-F6p"/>
+                        <outlet property="leftMotorPinStepper" destination="xdT-Qn-SHi" id="snX-I7-k2G"/>
+                        <outlet property="rightDirectionControl" destination="8al-pc-ZJh" id="oBq-Gg-tTG"/>
+                        <outlet property="rightMotorPinLabel" destination="qnR-Wl-mnd" id="Wp5-2g-iJz"/>
+                        <outlet property="rightMotorPinStepper" destination="paF-zG-xeY" id="AqD-wZ-I96"/>
+                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="XDj-Db-r4W" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="895" y="122"/>
+            <point key="canvasLocation" x="1836" y="121.92118226600985"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="3fJ-fc-D6n">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="emd-5D-ZGv" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="gSr-5d-f9P">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="56"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="96w-vZ-OPk" kind="relationship" relationship="rootViewController" id="FmY-a9-RBy"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="g1H-VX-P5r" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="893.60000000000002" y="121.92118226600985"/>
         </scene>
     </scenes>
     <resources>

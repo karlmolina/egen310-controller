@@ -22,6 +22,8 @@ class ViewController: UIViewController {
     @IBOutlet weak var rightAdjuster: UIStepper!
     @IBOutlet weak var rightAdjustmentLabel: UILabel!
     
+    let leftControlSlider = ControlSlider(frame: .zero)
+    
     var centralManager: CBCentralManager!
     var carPeripheral: CBPeripheral!
     var speedCharacteristic: CBCharacteristic!
@@ -44,6 +46,9 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        leftControlSlider.backgroundColor = .red
+        view.addSubview(leftControlSlider)
+        
         initializeSavedValues()
         
         speedLabel.text = "\(speedChange)"
@@ -56,6 +61,16 @@ class ViewController: UIViewController {
         leftAdjuster.value = Double(leftAdjustment)
 
         centralManager = CBCentralManager(delegate: self, queue: nil)
+    }
+    
+    override func viewDidLayoutSubviews() {
+      let margin: CGFloat = 20
+      let width = view.bounds.width / 4
+      let height: CGFloat = view.bounds.height - 2 * margin
+      
+      leftControlSlider.frame = CGRect(x: 0, y: 0,
+                                 width: width, height: height)
+      leftControlSlider.center = view.center
     }
     
     func initializeSavedValues() {

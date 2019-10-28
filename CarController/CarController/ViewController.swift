@@ -33,6 +33,7 @@ class ViewController: UIViewController {
     var rightAdjustment: Int = 0
     
     var sendSpeedTask: DispatchWorkItem!
+    var speedSent = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -89,13 +90,13 @@ class ViewController: UIViewController {
         speedChange = Int(sender.value)
         
         // Check if send speed async call exists and cancel if so
-        if sendSpeedTask != nil {
-            sendSpeedTask.cancel()
+        if !speedSent {
+            // Set new send speed task
+            speedSent = true
+            sendSpeedTask = DispatchWorkItem { self.sendSpeed(); self.speedSent = false }
+            // Dispatch async send speed call after delay
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.2, execute: sendSpeedTask)
         }
-        // Set new send speed task
-        sendSpeedTask = DispatchWorkItem { self.sendSpeed() }
-        // Dispatch async send speed call after delay
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.3, execute: sendSpeedTask)
 
         let defaults = UserDefaults.standard
         defaults.set(speedChange, forKey: "speedChange")

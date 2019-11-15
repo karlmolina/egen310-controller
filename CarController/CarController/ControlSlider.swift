@@ -10,8 +10,8 @@ import Foundation
 import UIKit
 
 class ControlSlider: UIControl {
-    var maximumValue: CGFloat = 1
-    var minimumValue: CGFloat = -1
+    var maximumValue: CGFloat = 10
+    var minimumValue: CGFloat = -10
     var value: CGFloat = 0
     
     private let trackLayer = CALayer()
@@ -53,7 +53,7 @@ class ControlSlider: UIControl {
     }
     
     func controlLength() -> CGFloat {
-        return abs(minimumValue) + abs(maximumValue)
+        return abs(maximumValue - minimumValue)
     }
     
     override var frame: CGRect {
@@ -68,13 +68,21 @@ extension ControlSlider {
         let location = touch.location(in: self)
     
         let deltaLocation = location.y - previousLocation.y
-        let deltaValue = (maximumValue - minimumValue) * deltaLocation / bounds.height
+        print("dl \(deltaLocation)")
+        let deltaValue = controlLength() * deltaLocation / bounds.height
+        print("dv \(deltaValue)")
         
         previousLocation = location
     
-        value = deltaValue
-        value = boundValue(value, toLowerValue: minimumValue,
-        upperValue: maximumValue)
+        value += deltaValue
+//        value = boundValue(value, toLowerValue: minimumValue, upperValue: maximumValue)
+        
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        
+        updateLayerFrames()
+        
+        CATransaction.commit()
         
         return true
     }
@@ -83,13 +91,14 @@ extension ControlSlider {
         let location = touch.location(in: self)
       
         let deltaLocation = location.y - previousLocation.y
-        let deltaValue = (maximumValue - minimumValue) * deltaLocation / bounds.width
+        let deltaValue = controlLength() * deltaLocation / bounds.height
+        print(deltaLocation)
+        print(deltaValue)
       
         previousLocation = location
       
         value += deltaValue
-        value = boundValue(value, toLowerValue: minimumValue,
-                                upperValue: maximumValue)
+//        value = boundValue(value, toLowerValue: minimumValue, upperValue: maximumValue)
       
         CATransaction.begin()
         CATransaction.setDisableActions(true)

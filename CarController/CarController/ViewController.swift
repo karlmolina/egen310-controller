@@ -140,10 +140,25 @@ class ViewController: UIViewController {
             DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.2, execute: sendSpeedTask)
         }
 
-        let defaults = UserDefaults.standard
         defaults.set(speedChange, forKey: "speedChange")
             
         speedLabel.text = "\(speedChange)"
+    }
+    
+    @IBAction func onSlowSpeedPress(_ sender: UIButton) {
+        quickChangeSpeed(speed: 150)
+    }
+    
+    @IBAction func onFastSpeedPress(_ sender: UIButton) {
+        quickChangeSpeed(speed: 240)
+    }
+    
+    func quickChangeSpeed(speed: Int) {
+        speedChange = speed
+        speedLabel.text = "\(speedChange)"
+        speedSlider.value = Float(speedChange)
+        defaults.set(speedChange, forKey: "speedChange")
+        sendSpeed()
     }
     
     @IBAction func onLeftAdjustmentChange(_ sender: UIStepper) {

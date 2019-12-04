@@ -1,4 +1,4 @@
-# User Documentation
+# :couple: User Documentation
 
 This is a guide to using the controller.
 
@@ -6,8 +6,8 @@ Included is how to [install](#Installation) the app, [connect](#Connecting) to t
 
 ## Requirements
 
-- iPhone running iOS 13
-- Computer running macOS
+- :iphone: iPhone running iOS 13
+- :computer: Computer running macOS
 
 ## Installation
 
@@ -66,3 +66,7 @@ The motor pins can be changed here, if you change which motor pins the motors ar
 The forward direction can also be changed here, if one motor is spinning the wrong direction, it can be toggled to spin the correct direction.
 
 ![Motor directions](/images/direction.jpeg)
+
+## :tada: Finished!
+
+Now you are ready to control the Honey Badger!

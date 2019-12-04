@@ -2,7 +2,7 @@
 
 This is a guide to using the controller.
 
-Included is how to [install](Installation) the app, [connect](Connecting) to the car, how to [control](Controlling) the car, and how to adjust [settings](Settings).
+Included is how to [install](#Installation) the app, [connect](#Connecting) to the car, how to [control](#Controlling) the car, and how to adjust [settings](#Settings).
 
 ## Requirements
 

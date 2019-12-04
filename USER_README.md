@@ -27,6 +27,8 @@ Included is how to [install](#Installation) the app, [connect](#Connecting) to t
 
 To move the car forward, press the two forward arrows simultaneously.
 
+![Move forward](/images/forward.jpg)
+
 To move the car backwards, press the two back arrows simultaneously.
 
 To turn, either press the forward arrow on one side alone.

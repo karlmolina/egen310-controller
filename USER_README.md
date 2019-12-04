@@ -31,20 +31,38 @@ To move the car forward, press the two forward arrows simultaneously.
 
 To move the car backwards, press the two back arrows simultaneously.
 
+![Move backward](/images/backward.jpg)
+
 To turn, either press the forward arrow on one side alone.
 
+![Turn](/images/turn.jpg)
+
 To rotate, press the forward arrow on one side, and the back arrow on the other side.
+
+![Rotate](/images/rotate.jpg)
 
 ## Settings
 
 To adjust the main speed of the car, use the speed slider.
 
+![Speed slider](/images/speed_slider.jpeg)
+
 Alternatively, for quick speed selection, use the "Go Fast" and "Go Slow" buttons.
+
+![Speed quick toggles](/images/speed_toggles.jpeg)
 
 To account for uneven motor powers, use the individual left and right speed steppers. This will allow you to lower speed on motors that are more powerful than the other.
 
+![Motor adjustment](/images/steppers.jpeg)
+
 To access more settings, press the gear icon in the top right corner.
+
+![More settings](/images/gear.jpeg)
 
 The motor pins can be changed here, if you change which motor pins the motors are connected to.
 
+![Motor pins](/images/pins.jpeg)
+
 The forward direction can also be changed here, if one motor is spinning the wrong direction, it can be toggled to spin the correct direction.
+
+![Motor directions](/images/direction.jpeg)

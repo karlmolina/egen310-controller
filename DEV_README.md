@@ -2,7 +2,7 @@
 
 This is a guide to get you up and running :running: with controller development.
 
-## Requirements :computer:
+## Requirements
 
 ### Hardware
 
@@ -18,7 +18,7 @@ This is a guide to get you up and running :running: with controller development.
   - Adafruit BLE
   - Adafruit Motor Shield
 
-## Setup :hammer:
+## Setup
 
 Clone the repository with git or download the code.
 
@@ -30,7 +30,7 @@ Open the `CarController` folder with XCode.
 
 Open the `car_arduino` folder with the Arduino IDE.
 
-## Testing :triangular_ruler:
+## Testing
 
 To test the controller app without bluetooth, run the app in the iOS simulator.
 
@@ -38,4 +38,4 @@ To test bluetooth, it must be run on your iPhone. To do so, plug your phone into
 
 To test the microcontroller code, plug the microcontroller into the computer via USB. Then click upload in the IDE to upload the code to the microcontroller.
 
-## Done! :tada:
+## :tada: Done!
